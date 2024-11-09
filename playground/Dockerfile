@@ -35,6 +35,7 @@ RUN apt-get -q update && \
 
 RUN pip3 install --upgrade pip setuptools wheel
 RUN pip3 install Flask
+RUN pip3 install cassandra-driver
 
 ENV HOME "${DOCKER_HOME_DIR}"
 # AxxO change 3 for local spark development 

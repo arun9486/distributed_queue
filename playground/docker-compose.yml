@@ -15,6 +15,7 @@ services:
     volumes:
       - /home/arun-linux/projects/github/metrics-collector:/home/arun-linux/metrics-collector
       - /home/arun-linux/projects/github/distributed-queue/playground/app:${DOCKER_HOME_DIR}/app  
+      - /home/arun-linux/projects/data/cassandra:${DOCKER_HOME_DIR}/cassandra
     ports:
       - '8080:8080'
 

@@ -1,6 +1,13 @@
 from flask import Flask, request, jsonify
+import logging
 
 app = Flask(__name__)
+
+logging.basicConfig(
+    filename='/tmp/application.log',
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 # Health check endpoint
 @app.route("/health", methods=["GET"])
