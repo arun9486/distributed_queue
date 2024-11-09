@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  gateway:
+    container_name: api-gateway
+    build: .
+    image: distributed-queue
+    user: "arun-linux"
+    entrypoint: ['./entrypoint.sh', 'gateway']
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - /home/arun-linux/projects/github/metrics-collector:/home/arun-linux/metrics-collector
+      - /home/arun-linux/projects/github/distributed-queue/playground/app:${DOCKER_HOME_DIR}/app  
+    ports:
+      - '8080:8080'
+
+  storage:
+    image: distributed-queue
+    user: "arun-linux"
+    entrypoint: ['./entrypoint.sh', 'storage']
+    depends_on:
+      - gateway
+    volumes:
+      - /home/arun-linux/projects/github/metrics-collector:/home/arun-linux/metrics-collector
+      - /home/arun-linux/projects/github/distributed-queue/playground/app:${DOCKER_HOME_DIR}/app  
