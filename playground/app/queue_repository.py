@@ -22,17 +22,17 @@ class QueueRepository():
     id = uuid.uuid1()
 
     self.create_dqueue_entry(name, retention_period, id)
+    
+    # FIX: creating a new table for each queue, can we do better.
     self.create_message_table(name)
 
-  # Function to create a new table dynamically
   def create_message_table(table_name):
-      # Define the fields with composite partition keys and clustering key
       attrs = {
           '__keyspace__': KEYSPACE,
           '__table_name__': table_name,
-          'id': columns.UUID(primary_key=True, default=uuid.uuid4),  # First part of partition key
-          'state': columns.Text(primary_key=True),                   # Second part of partition key
-          'created_date': columns.Date(primary_key=True),            # Clustering key
+          'id': columns.UUID(primary_key=True, default=uuid.uuid4),  
+          'state': columns.Text(primary_key=True),                   
+          'created_date': columns.Date(primary_key=True),            
           'name': columns.UUID(),
           'host': columns.Text(),
       }
@@ -45,10 +45,10 @@ class QueueRepository():
   def create_dqueue_entry(self, name, retention_period, id):
     item = DQueue.create(
         name="queue_name",
-        id=uuid.uuid4(),                  # Generate a new UUID for the id field
-        retention_time=3600,              # Set retention time in seconds
-        visible_messages=10,              # Set initial visible messages count
-        inprogress_messages=5             # Set initial in-progress messages count
+        id=uuid.uuid4(),                 
+        retention_time=3600,             
+        visible_messages=10,             
+        inprogress_messages=5            
     )
 
     logging.info(f"Item {item} inserted")
