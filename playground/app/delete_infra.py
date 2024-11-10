@@ -3,18 +3,20 @@ from cassandra.cqlengine.management import drop_table
 from cassandra.cqlengine.models import Model
 from cassandra.cqlengine import columns
 
-# Define the model (schema definition for reference)
-class Messages(Model):
-    __keyspace__ = "default"
-    name = columns.UUID(primary_key=True)
-    state = columns.Text(primary_key=True)
-    created_date = columns.Date(primary_key=True)
-    id = columns.UUID()
-    host = columns.Text()
+from utils import KEYSPACE
 
+# Define the model (schema definition for reference)
+class DQueue(Model):
+    __keyspace__ = KEYSPACE 
+    name = columns.Text(primary_key=True)
+    id = columns.UUID(primary_key=True)
+    retention_time = columns.Integer()
+    visibile_messages = columns.Integer()
+    inprogress_messages = columns.Integer()
+    
 # Connect to the Cassandra cluster and keyspace
 connection.setup(['127.0.0.1'], "default", protocol_version=3)
 
 # Drop the table
-drop_table(Messages)
-print("Table 'Messages' has been deleted.")
+drop_table(DQueue)
+print("Table 'DQueue' has been deleted.")

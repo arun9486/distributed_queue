@@ -9,15 +9,6 @@ from infra import DQueue
 import logging
 
 class QueueRepository():
-  # message class
-  class Messages(Model):
-    __keyspace__ = KEYSPACE 
-    id = columns.UUID() 
-    state = columns.Text(primary_key=True)
-    created_date = columns.Date(primary_key=True)
-    name = columns.UUID(primary_key=True)
-    host = columns.Text()
-    
   def create(self, name, retention_time):
     id = uuid.uuid1()
 
@@ -34,6 +25,7 @@ class QueueRepository():
     item = DQueue.create(
         name=name,
         id=id,
+        state="CREATED",
         retention_time=retention_time,             
         visible_messages=0,             
         inprogress_messages=0            
@@ -53,7 +45,7 @@ class QueueRepository():
           'host': columns.Text(),
       }
 
-      new_table = type(table_name, (Model,), attrs)
+      new_table = type(message_table_name, (Model,), attrs)
 
       sync_table(new_table)
       logging.info(f"Table '{message_table_name}' created with composite \

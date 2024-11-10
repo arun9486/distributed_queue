@@ -26,23 +26,9 @@ class DQueue(Model):
     __keyspace__ = KEYSPACE 
     name = columns.Text(primary_key=True)
     id = columns.UUID(primary_key=True)
+    state = columns.Text()
     retention_time = columns.Integer()
-    visibile_messages = columns.Integer()
+    visible_messages = columns.Integer()
     inprogress_messages = columns.Integer()
     
-# # FiX it is possible that this wil create hot partition
-# class Messages(Model):
-#     __keyspace__ = KEYSPACE 
-#     name = columns.UUID(primary_key=True)
-#     state = columns.Text(primary_key=True)
-#     created_date = columns.Date(primary_key=True)
-#     id = columns.UUID() 
-#     host = columns.Text()
-    
-#     name = columns.UUID(primary_key=True)            # First part of composite partition key
-#     state = columns.Text(primary_key=True)           # Second part of composite partition key
-#     created_date = columns.Date(primary_key=True)    # Clustering key
-#     id = columns.UUID() 
-#     host = columns.Text()
-
 sync_table(DQueue)
