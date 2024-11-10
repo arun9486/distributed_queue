@@ -46,9 +46,9 @@ class QueueRepository():
       attrs = {
           '__keyspace__': KEYSPACE,
           '__table_name__': message_table_name,
-          'id': columns.UUID(primary_key=True, default=uuid.uuid4),  
+          'id': columns.UUID(partition_key=True, default=uuid.uuid4),  
           'state': columns.Text(primary_key=True),                   
-          'created_date': columns.Date(primary_key=True),            
+          'created_date': columns.Date(),
           'name': columns.UUID(),
           'host': columns.Text(),
       }
@@ -56,8 +56,8 @@ class QueueRepository():
       new_table = type(table_name, (Model,), attrs)
 
       sync_table(new_table)
-      logging.info(f"Table '{message_table_name}' created with composite
-                   partition key (id, state) and clustering key
+      logging.info(f"Table '{message_table_name}' created with composite \
+                   partition key (id, state) and clustering key \
                    (created_date).")
 
   def __get_message_table_name(self, table_name):
