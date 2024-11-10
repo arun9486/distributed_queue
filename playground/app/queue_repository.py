@@ -18,18 +18,33 @@ class QueueRepository():
     name = columns.UUID(primary_key=True)
     host = columns.Text()
     
-  def create(self, name, retention_period):
+  def create(self, name, retention_time):
     id = uuid.uuid1()
 
-    self.create_dqueue_entry(name, retention_period, id)
+    # create an entry in queue metadata table
+    self.__create_dqueue_entry(name, retention_time, id)
     
     # FIX: creating a new table for each queue, can we do better.
-    self.create_message_table(name)
+    # create a new message table
+    self.__create_message_table(name)
+    return id
+    
+  def __create_dqueue_entry(self, name, retention_time, id):
+    item = DQueue.create(
+        name=name,
+        id=id,
+        retention_time=retention_time,             
+        visible_messages=0,             
+        inprogress_messages=0            
+    )
 
-  def create_message_table(table_name):
+    logging.info(f"Item {item} inserted")
+
+  def __create_message_table(self, queue_name):
+      message_table_name = self.__get_message_table_name(queue_name)
       attrs = {
           '__keyspace__': KEYSPACE,
-          '__table_name__': table_name,
+          '__table_name__': message_table_name,
           'id': columns.UUID(primary_key=True, default=uuid.uuid4),  
           'state': columns.Text(primary_key=True),                   
           'created_date': columns.Date(primary_key=True),            
@@ -40,16 +55,9 @@ class QueueRepository():
       new_table = type(table_name, (Model,), attrs)
 
       sync_table(new_table)
-      logging.info(f"Table '{table_name}' created with composite partition key (id, state) and clustering key (created_date).")
-    
-  def create_dqueue_entry(self, name, retention_period, id):
-    item = DQueue.create(
-        name="queue_name",
-        id=uuid.uuid4(),                 
-        retention_time=3600,             
-        visible_messages=10,             
-        inprogress_messages=5            
-    )
-
-    logging.info(f"Item {item} inserted")
+      logging.info(f"Table '{message_table_name}' created with composite
+                   partition key (id, state) and clustering key
+                   (created_date).")
+  def __get_message_table_name(self, table_name):
+    return table_name + "_message_table"
 
