@@ -4,8 +4,8 @@ from cassandra.cqlengine import connection
 from cassandra.cluster import Cluster
 from cassandra.cqlengine.management import sync_table
 
-from utils import KEYSPACE
 
+KEYSPACE = "default"
 
 cluster = Cluster(['127.0.0.1'])
 session = cluster.connect()
@@ -25,22 +25,23 @@ connection.setup(['127.0.0.1'], KEYSPACE, protocol_version=3)
 class DQueue(Model):
     __keyspace__ = KEYSPACE 
     name = columns.Text(primary_key=True)
-    id = columns.UUID(primary_key=True)
+    id = columns.UUID()
     state = columns.Text()
     retention_time = columns.Integer()
     visible_messages = columns.Integer()
     inprogress_messages = columns.Integer()
     head = columns.Text()
+    tail = columns.Text()
     
 class Message(Model):
     __keyspace__ = KEYSPACE 
     id = columns.UUID(partition_key=True)
-    created_date = columns.Date(primary_key=True)
-    state = columns.Text()                   
+    created_date = columns.Date()
+    state = columns.Text()
+    content = columns.Text()
     queue_name = columns.Text(primary_key=True)
     next_id = columns.Text()
     prev_id = columns.Text()
-    host = columns.Text()
     
 sync_table(DQueue)
 sync_table(Message)

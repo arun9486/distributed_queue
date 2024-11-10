@@ -2,12 +2,10 @@ from flask import Flask, request, jsonify
 import logging
 import json
 from queue_repository import QueueRepository
+from message_repository import MessageRepository
 from infra import DQueue
 
-
-
 class Driver():
-    
   def __init__(self):   
     self.app = Flask(__name__)
 
@@ -18,6 +16,7 @@ class Driver():
     )
 
     self.queue_repo = QueueRepository()
+    self.message_repo = MessageRepository()
 
     # Health check endpoint
     @self.app.route("/health", methods=["GET"])
@@ -53,10 +52,10 @@ class Driver():
         queue_name = request.json.get("queue_name")
         message = request.json.get("message")
         
+        self.message_repo.save(queue_name, message)
         return jsonify({"status": "OK"}), 404
         
 
- 
   def start_server(self):
     self.app.run(host="0.0.0.0", port=8080)
       
