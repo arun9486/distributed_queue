@@ -21,12 +21,13 @@ class QueueRepository():
   def create(self, name, retention_time):
     id = uuid.uuid1()
 
+    # FIX: creating a new tablefor each queue, can we do better.
+    # create a new message table
+    self.__create_message_table(name)
+
     # create an entry in queue metadata table
     self.__create_dqueue_entry(name, retention_time, id)
     
-    # FIX: creating a new table for each queue, can we do better.
-    # create a new message table
-    self.__create_message_table(name)
     return id
     
   def __create_dqueue_entry(self, name, retention_time, id):
@@ -58,6 +59,7 @@ class QueueRepository():
       logging.info(f"Table '{message_table_name}' created with composite
                    partition key (id, state) and clustering key
                    (created_date).")
+
   def __get_message_table_name(self, table_name):
     return table_name + "_message_table"
 
