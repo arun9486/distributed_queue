@@ -30,5 +30,17 @@ class DQueue(Model):
     retention_time = columns.Integer()
     visible_messages = columns.Integer()
     inprogress_messages = columns.Integer()
+    head = columns.Text()
+    
+class Message(Model):
+    __keyspace__ = KEYSPACE 
+    id = columns.UUID(partition_key=True)
+    created_date = columns.Date(primary_key=True)
+    state = columns.Text()                   
+    queue_name = columns.Text(primary_key=True)
+    next_id = columns.Text()
+    prev_id = columns.Text()
+    host = columns.Text()
     
 sync_table(DQueue)
+sync_table(Message)

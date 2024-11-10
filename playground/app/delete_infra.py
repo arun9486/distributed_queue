@@ -1,22 +1,22 @@
-from cassandra.cqlengine import connection
-from cassandra.cqlengine.management import drop_table
-from cassandra.cqlengine.models import Model
-from cassandra.cqlengine import columns
+from cassandra.cluster import Cluster
 
 from utils import KEYSPACE
 
-# Define the model (schema definition for reference)
-class DQueue(Model):
-    __keyspace__ = KEYSPACE 
-    name = columns.Text(primary_key=True)
-    id = columns.UUID(primary_key=True)
-    retention_time = columns.Integer()
-    visibile_messages = columns.Integer()
-    inprogress_messages = columns.Integer()
-    
-# Connect to the Cassandra cluster and keyspace
-connection.setup(['127.0.0.1'], "default", protocol_version=3)
+# Connect to the Cassandra cluster
+cluster = Cluster(['localhost'])  # replace with your host IP
+session = cluster.connect()
 
-# Drop the table
-drop_table(DQueue)
-print("Table 'DQueue' has been deleted.")
+# Specify the keyspace and table you want to drop
+tables = ['dqueue', 'message']
+
+# Use the specified keyspace
+session.set_keyspace(KEYSPACE)
+
+# Construct and execute the DROP TABLE query
+for table_name in tables:
+  drop_table_query = f"DROP TABLE IF EXISTS {table_name};"
+  session.execute(drop_table_query)
+  print(f"Table {table_name} has been dropped from keyspace {KEYSPACE}.")
+
+# Close the connection
+cluster.shutdown()

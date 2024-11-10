@@ -23,7 +23,7 @@ run:
 	make down && docker-compose up
 
 run-scaled:
-	make down && docker-compose up --scale storage=3
+	make down && docker-compose up
 
 run-all:
 	make down && docker-compose up -d --scale spark-worker=3 && docker exec -it playground-spark-master /bin/bash -c "/home/arun-linux/setup.sh"
