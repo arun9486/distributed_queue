@@ -82,7 +82,10 @@ class MessageRepository():
     head = str(id) if head is None else head
     tail = str(id)
     logging.info(f"updating head and tail of queue {queue} to head {head} tail {tail}")
-    DQueue.objects(name=queue.name).update(head=head, tail=tail)
+
+    # we can optimize to do batch updat on queue table
+    visible_message_count = queue.visible_messages + 1
+    DQueue.objects(name=queue.name).update(head=head, tail=tail, visible_messages=visible_message_count)
 
   def __get_folder_path(self, queue_name):
     return  self.raw_file_path_prefix + queue_name
@@ -120,14 +123,13 @@ class MessageRepository():
     try:
         return sorted([f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))])
     except FileNotFoundError:
-        # If the folder doesn't exist, return an empty list
         return []
     
   def __delete_file(self, queue_name, file_path):
     full_path = self.__get_folder_path(queue_name) + "/" + file_path
     file = Path(full_path)
     try:
-        file.unlink()  # Removes the file
+        file.unlink()
         logging.info(f"File '{file_path}' deleted successfully.")
     except FileNotFoundError:
         logging.info(f"File '{file_path}' not found.")
