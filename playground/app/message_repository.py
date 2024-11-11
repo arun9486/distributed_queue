@@ -50,12 +50,26 @@ class MessageRepository():
     
     self.__create_file_with_message(message, queue_folder_path)
 
+
+  def get(self, queue_name, count):
+    queue = self.__get_dqueue_item(queue_name)
+    head = queue.head
     
-  def receive(self, id):
-    logging.info("Not implemented")
-  
-  def delete(self, id):
-    logging.info("Not implemented")
+    result = []
+    current_item = head
+    while count > 0 and current_item is not None:
+      message = self.__get_message_item(current_item, queue_name)
+      self.print_message(message)
+
+      if current_item is None:
+         break
+       
+      result.append({"id": str(message.id), "content": message.content})
+      count -= 1
+      current_item = message.next_id
+
+    return result
+       
     
   def __create_new_message_entry(self, queue, content):
     tail = queue.tail
@@ -136,6 +150,30 @@ class MessageRepository():
     except Exception as e:
         logging.info(f"An error occurred: {e}")
     
+  def __get_dqueue_item(self, queue_name):
+    try:
+        item = DQueue.objects.get(name=queue_name)
+        return item
+    except DQueue.DoesNotExist:
+        logging.info(f"No item found with name: {queue_name}")
+        return None
+
+  def __get_message_item(self, message_id, queue_name):
+    try:
+        item = Message.objects.get(id=message_id, queue_name=queue_name)
+        return item
+    except DQueue.DoesNotExist:
+        logging.info(f"No item found with name: {message_id}")
+        return None
+    
+  def print_message(self, entry):
+    logging.info(entry.id)
+    logging.info(entry.created_date)
+    logging.info(entry.state)
+    logging.info(entry.content)
+    logging.info(entry.queue_name)
+    logging.info(entry.prev_id)
+    logging.info(entry.next_id)
     
 
 

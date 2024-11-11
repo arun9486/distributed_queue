@@ -18,13 +18,16 @@ def list_all_messages():
     all_entries = Message.objects.all()  # Retrieve all entries
     for entry in all_entries:
       print()
-      print(entry.id)
-      print(entry.created_date)
-      print(entry.state)
-      print(entry.content)
-      print(entry.queue_name)
-      print(entry.prev_id)
-      print(entry.next_id)
+      print_message(entry)
+      
+def print_message(entry):
+  print(entry.id)
+  print(entry.created_date)
+  print(entry.state)
+  print(entry.content)
+  print(entry.queue_name)
+  print(entry.prev_id)
+  print(entry.next_id)
 
 def list_all_queues():
   all_entries = DQueue.objects.all()  # Retrieve all entries

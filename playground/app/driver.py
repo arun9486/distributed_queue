@@ -49,12 +49,19 @@ class Driver():
           
     @self.app.route("/send", methods=["POST"])
     def send_message():
-        queue_name = request.json.get("queue_name")
-        message = request.json.get("message")
-        
-        self.message_repo.save(queue_name, message)
-        return jsonify({"status": "OK"}), 404
-        
+      queue_name = request.json.get("queue_name")
+      message = request.json.get("message")
+      
+      self.message_repo.save(queue_name, message)
+      return jsonify({"status": "OK"}), 404
+      
+    @self.app.route("/receive", methods=["POST"])
+    def receive_message():
+      queue_name = request.json.get("queue_name")
+      count = request.json.get("count")
+      assert count in range(1, 11), "count should be in range 1, 10"
+      
+      return self.message_repo.get(queue_name, count)
 
   def start_server(self):
     self.app.run(host="0.0.0.0", port=8080)
