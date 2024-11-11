@@ -1,19 +1,11 @@
 # Tasks
-* create Queue
-* send message
+* create Queue - Done
+* send message - Done
 * receive message
+** Use min heap for getting the first message which has passed vibility timeout
+   if not we dont have to look at other messages
 * delete message
 ** complete cleanup
 * clean up after retention
 * visibility timeout
 
-
-
-## Visibility
-For visibility we can do simply polling. With prefix like INPROGREES_<timestamp > current> something like that
-but for scalability we can define a node (got from a leader) and that node is responisble for cleaning
-deleting records etc
-
-
-## RPC Server
-Support mult-threading of RPC server
