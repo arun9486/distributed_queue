@@ -67,8 +67,9 @@ class Driver():
     def delete_message():
       queue_name = request.json.get("queue_name")
       message_id = request.json.get("message_id")
-      
-      return self.message_repo.get(queue_name, count)
+
+      self.message_repo.delete(queue_name, message_id)
+      return jsonify({"status": "OK"}), 404
 
   def start_server(self):
     self.app.run(host="0.0.0.0", port=8080)

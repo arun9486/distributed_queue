@@ -50,7 +50,7 @@ class MessageRepository():
           _, message = current_item
           logging.info(f"Trying to put message {message.id} back to queue")
 
-          if message.id in self.invisible_dict.get(queue.name):
+          if str(message.id)in self.invisible_dict.get(queue.name):
             self.__put_back_message_entry(queue, message)
             time.sleep(0.5)
     
@@ -107,7 +107,7 @@ class MessageRepository():
         break
        
       date = time.time()
-      self.invisible_dict[queue_name].add(message.id)
+      self.invisible_dict[queue_name].add(str (message.id))
       heapq.heappush(self.invisible_pq[queue_name], (date, message))
       result.append({"id": str(message.id), "content": message.content})
       count -= 1; actual_count += 1; current_item = message.next_id
@@ -129,15 +129,20 @@ class MessageRepository():
     self.__print_queue(queue)
     return result
 
-def delete(self, queue_name, message_id):
-    invisible_dict = self.invisible_dict.get(queue_name)
-    
-    if not invisible_dict:
-      return
+  def delete(self, queue_name, message_id):
+      invisible_dict = self.invisible_dict.get(queue_name)
+      
+      if not invisible_dict:
+        logging.info(f"No invisible_dict found for queue {queue_name}")
+        return
 
-    if message_id in invisible_dict:
-      invisible_dict.remove(message_id)
-      self.__delete_message_item(message_id, queue_name)
+      logging.info("printing invisible_dict")
+      logging.info(invisible_dict)
+      if message_id in invisible_dict:
+        logging.info(f"message {message_id} found in invisibile_dict")
+        invisible_dict.remove(message_id)
+        self.__delete_message_item(message_id, queue_name)
+
   def __put_back_message_entry(self, queue, message):
     # get the latest item
     queue = self.__get_queue_item(queue.name)
