@@ -63,6 +63,13 @@ class Driver():
       
       return self.message_repo.get(queue_name, count)
 
+    @self.app.route("/delete", methods=["POST"])
+    def delete_message():
+      queue_name = request.json.get("queue_name")
+      message_id = request.json.get("message_id")
+      
+      return self.message_repo.get(queue_name, count)
+
   def start_server(self):
     self.app.run(host="0.0.0.0", port=8080)
       
